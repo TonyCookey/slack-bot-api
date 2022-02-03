@@ -14,6 +14,7 @@ const { WebClient, LogLevel } = require('@slack/web-api');
 const client = new WebClient(token, {
     logLevel: LogLevel.DEBUG
 });
+
 app.use('/', slackEvents.expressMiddleware())
 slackEvents.on('message', async (event) => {
     console.log(event)
