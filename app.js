@@ -15,6 +15,7 @@ app.message('hi', async ({ message, say }) => {
     console.log('hello');
     await say(`Hey there <@${message.user}>!`);
 });
+
 app.message('hello', async ({ message, say }) => {
     // say() sends a message to the channel where the event was triggered
     console.log('hello');
@@ -60,6 +61,7 @@ app.message('hello', async ({ message, say }) => {
         , "text": "Responding to Initial Greeting"
     });
 });
+
 app.action('first-greeting-action', ({ ack, say }) => {
     // Acknowledge command request
     await ack();
@@ -145,24 +147,33 @@ app.action('second-greeting-action', ({ ack, say }) => {
                                 "value": "value-2"
                             }
                         ],
-                        "action_id": "second-greeting-action"
+                        "action_id": "third-greeting-action"
                     }
                 ]
             }
         ]
-        , "text": "Responding to First Greeting Action"
+        , "text": "Responding to Second Greeting Action"
     });
 });
 
-// The echo command simply echoes on command
+app.action('third-greeting-action', ({ ack, say }) => {
+    // Acknowledge command request
+    await ack();
+
+    await say('Thank You!');
+
+});
+
+// Listen for a slash command invocation
 app.command('/bot', async ({ command, ack, say }) => {
     // Acknowledge command request
     await ack();
 
     await say('Welcome. How are you doing?');
 });
-// Listen for a slash command invocation
-app.command('/bot', async ({ ack, body, client, logger }) => {
+
+
+app.command('/view', async ({ ack, body, client, logger }) => {
     // Acknowledge the command request
     await ack();
 
@@ -222,6 +233,7 @@ app.command('/bot', async ({ ack, body, client, logger }) => {
         logger.error(error);
     }
 });
+
 
 (async () => {
     // Start your app
