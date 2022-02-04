@@ -18,6 +18,22 @@ const client = new WebClient(token, {
 app.use('/', slackEvents.expressMiddleware())
 slackEvents.on('message', async (event) => {
     console.log(event)
+    if (!event.subtype && !event.bot_id) {
+        client.chat.postMessage({
+            token,
+            channel: event.channel,
+            thread_ts: event.ts,
+            text: "Hello World!"
+        })
+    }
+})
+slackEvents.on('error', async (event) => {
+    console.log(event)
+})
+// app.use()
+app.use('/my-bot', (req, res) => {
+    console.log(req);
+    res.status(200).send()
 })
 
 
