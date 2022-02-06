@@ -1,43 +1,42 @@
 require('dotenv').config({ path: __dirname + '/.env' })
+const http = require('http');
+
+
 const express = require('express')
+const cors = require('cors')
+const morgan = require('morgan');
+
 const app = express()
+
+const server = http.createServer(app);
+
+const responsesController = require('./controllers/responses.controller')
+
+
+const { mongoConnect } = require('./mongo');
+
 const PORT = process.env.PORT || 3000
 
+app.use(cors({
+    origin: 'http://localhost:3000',
+}));
+app.use(morgan('combined'));
 
-//YOUR CODE HERE
+app.use(express.json());
 
-const token = process.env.BOT_TOKEN
-const eventsApi = require('@slack/events-api')
-const slackEvents = eventsApi.createEventAdapter(process.env.SIGNING_SECRET)
+app.get('/users/responses/:user_email', responsesController.GetUserResponse)
+app.get('/users/responses', responsesController.GetAllResponses)
 
-const { WebClient, LogLevel } = require('@slack/web-api');
-const client = new WebClient(token, {
-    logLevel: LogLevel.DEBUG
-});
-
-app.use('/', slackEvents.expressMiddleware())
-slackEvents.on('message', async (event) => {
-    console.log(event)
-    if (!event.subtype && !event.bot_id) {
-        client.chat.postMessage({
-            token,
-            channel: event.channel,
-            thread_ts: event.ts,
-            text: "Hello World!"
-        })
-    }
-})
-slackEvents.on('error', async (event) => {
-    console.log(event)
-})
-// app.use()
-app.use('/my-bot', (req, res) => {
-    console.log(req);
-    res.status(200).send()
-})
+app.get('/users/responses/:question/:user_email', responsesController.GetUserQuestionResponse)
+app.post('/users/responses', responsesController.SaveUserResponses)
 
 
+async function startServer() {
+    await mongoConnect();
 
-app.listen(PORT, () => {
-    console.log(`Slack Bot App listening at http://localhost:${PORT}`)
-})
+    server.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}...`);
+    });
+}
+
+startServer();
