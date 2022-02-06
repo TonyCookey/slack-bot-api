@@ -41,7 +41,7 @@ async function getUserQuestionResponse(user_email, question) {
 }
 
 // update/insert a existing/new response to a question
-async function saveUserResponse(user_email, response, question) {
+async function saveUserResponse(user_email, question, response) {
     try {
         const responses = await Responses.findOneAndUpdate({
             user: user_email,
